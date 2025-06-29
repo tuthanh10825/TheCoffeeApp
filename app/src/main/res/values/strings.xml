@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">TheCoffeeApp</string>
+    <string name="type1_americano">Americano</string>
+    <string name="type2_cappuccino">Cappuccino</string>
+    <string name="type3_mocha">Mocha</string>
+    <string name="type4_flatwhite">Flat White</string>
+</resources>
