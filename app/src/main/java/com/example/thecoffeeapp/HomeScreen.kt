@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.thecoffeeapp.BottomNavBar
 
 import com.example.thecoffeeapp.component.RedeemCollection
 import androidx.annotation.DrawableRes
@@ -35,6 +34,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -44,13 +48,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.example.thecoffeeapp.component.WrapBox
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
+import kotlinx.coroutines.delay
+import java.time.LocalTime
 
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(
+    username: String,
+    onProfileClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(modifier = modifier.fillMaxHeight()) {
 
         Greeting(
+            username = username,
+            onProfileClick = onProfileClick,
             modifier = Modifier.padding(horizontal = 26.dp, vertical = 30.dp)
         )
         RedeemCollection(modifier = Modifier.padding(horizontal = 24.dp))
@@ -72,14 +84,16 @@ fun HomeScreenPreview() {
         modifier = Modifier.systemBarsPadding().navigationBarsPadding()
 
     ) { padding ->
-        HomeScreen(modifier = Modifier.padding(padding))
+        HomeScreen(username = "Tu Thanh", {}, modifier = Modifier.padding(padding))
     }
 }
 
 
 
-private data class DrawableStringPair(
+data class CoffeeTypeData (
+    //This holds the drawable resource.
     @DrawableRes val drawable: Int,
+    //This holds the string resource, or we can understand it as the identifier for the of the drink.
     @StringRes val text: Int
 )
 
@@ -88,7 +102,8 @@ private val iconList = listOf(
     R.drawable.type2_cappucino to R.string.type2_cappuccino,
     R.drawable.type3_mocha to R.string.type3_mocha,
     R.drawable.type4_flatwhite to R.string.type4_flatwhite,
-).map { DrawableStringPair(it.first, it.second)}
+).map { CoffeeTypeData(it.first, it.second)}
+
 
 @Composable
 fun CoffeeTypeCard(
@@ -137,6 +152,7 @@ fun CoffeeTypeCardPreview() {
 
 @Composable
 fun CoffeeTypeCollectionGrid(
+    list: List<CoffeeTypeData>,
     modifier: Modifier = Modifier.Companion
 ){
     LazyVerticalGrid(
@@ -165,6 +181,7 @@ fun CoffeeTypeChoosing(
         },
         mainContent = {
             CoffeeTypeCollectionGrid(
+                listOf(),
                 Modifier.Companion.padding(bottom = 24.dp)
             )
         },
@@ -183,7 +200,22 @@ fun CoffeeTypeCollectionGridPreview() {
 }
 
 @Composable
-fun Greeting(modifier: Modifier = Modifier) {
+fun Greeting(
+    username: String,
+    onProfileClick: () -> Unit,
+    onOrderClick: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    var greeting by remember { mutableStateOf(getGreeting()) }
+
+    // Update every minute
+    LaunchedEffect(Unit) {
+        while (true) {
+            greeting = getGreeting()
+            delay(60_000L)
+        }
+    }
+
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -191,11 +223,11 @@ fun Greeting(modifier: Modifier = Modifier) {
     ) {
         Column {
             Text(
-                text = "Good morning",
+                text = greeting,
                 style = MaterialTheme.typography.bodyMedium.copy(color = Color.Companion.Gray)
             )
             Text(
-                text = "Tu Thanh",
+                text = username,
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Companion.Bold)
             )
         }
@@ -203,8 +235,7 @@ fun Greeting(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             IconButton(
-                onClick = {}
-
+                onClick = onOrderClick
             ) {
                 Icon(
                     imageVector = Icons.Outlined.ShoppingCart,
@@ -213,8 +244,7 @@ fun Greeting(modifier: Modifier = Modifier) {
                 )
             }
             IconButton(
-
-                onClick = {}
+                onClick = onProfileClick
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Person,
@@ -230,6 +260,18 @@ fun Greeting(modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     TheCoffeeAppTheme {
-        Greeting()
+        Greeting("Tu Thanh", {})
     }
 }
+
+fun getGreeting(): String {
+    val hour = LocalTime.now().hour
+    return when (hour) {
+        in 5..11 -> "Good morning"
+        in 12..17 -> "Good afternoon"
+        in 18..21 -> "Good evening"
+        else -> "Good night"
+    }
+}
+
+

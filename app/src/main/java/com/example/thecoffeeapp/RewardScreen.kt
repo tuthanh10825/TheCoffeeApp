@@ -36,7 +36,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun RewardScreen(modifier: Modifier = Modifier) {
+fun RewardScreen(onRedeemReward: () -> Unit,
+                 modifier: Modifier = Modifier) {
     val rewardHistoryList = sampleRewards
     PageCard(
         title = "Reward",
@@ -44,7 +45,8 @@ fun RewardScreen(modifier: Modifier = Modifier) {
             Column(modifier = Modifier.fillMaxSize()) {
                 RedeemCollection(modifier = Modifier.padding(horizontal = 24.dp))
                 Spacer(Modifier.height(16.dp))
-                PointsSection(modifier = Modifier.padding(horizontal = 24.dp))
+                PointsSection(onClicked = onRedeemReward,
+                    modifier = Modifier.padding(horizontal = 24.dp))
                 Spacer(Modifier.height(16.dp))
                 RewardHistoryList(rewardHistoryList, modifier = Modifier.padding(horizontal = 24.dp))
             }
@@ -58,7 +60,7 @@ fun RewardScreen(modifier: Modifier = Modifier) {
 @Composable
 private fun RewardScreenPreview() {
     TheCoffeeAppTheme {
-        RewardScreen()
+        RewardScreen({})
     }
 }
 
