@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cake
 import androidx.compose.material.icons.filled.CardGiftcard
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.Icon
@@ -90,6 +92,16 @@ object Reward : Dest {
 object Orders : Dest {
     override val icon = Icons.Default.Receipt
     override val route = "orders"
+}
+
+object Profile: Dest {
+    override val icon = Icons.Default.Person
+    override val route = "profile"
+}
+
+object Redeem: Dest {
+    override val icon = Icons.Default.Cake
+    override val route = "redeem"
 }
 
 val tabScreens = listOf(
