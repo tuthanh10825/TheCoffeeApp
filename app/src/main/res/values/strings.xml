@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TheCoffeeApp</string>
+    <string name="app_name">Cafely</string>
     <string name="type1_americano">Americano</string>
     <string name="type2_cappuccino">Cappuccino</string>
     <string name="type3_mocha">Mocha</string>

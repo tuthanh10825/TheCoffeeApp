@@ -22,30 +22,46 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.thecoffeeapp.component.PageCard
 import com.example.thecoffeeapp.component.RedeemCollection
-import com.example.thecoffeeapp.data.point
-import com.example.thecoffeeapp.data.sampleRewards
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun RewardScreen(onRedeemReward: () -> Unit,
-                 modifier: Modifier = Modifier) {
-    val rewardHistoryList = sampleRewards
+fun RewardScreen(
+
+    onRedeemReward: () -> Unit,
+     modifier: Modifier = Modifier,
+     viewModel: CoffeeViewModel,
+    onRedeemLoyalty : () -> Unit,
+) {
+
+
+    val rewardHistoryList = viewModel.rewardList.toMutableStateList()
+    val point = viewModel.redeemPoint.value
+    val coffeeCnt = viewModel.coffeeCnt.value
     PageCard(
         title = "Reward",
         mainContent = {
             Column(modifier = Modifier.fillMaxSize()) {
-                RedeemCollection(modifier = Modifier.padding(horizontal = 24.dp))
+                RedeemCollection(
+                    coffeeCnt = coffeeCnt,
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    onRedeemClick = onRedeemLoyalty
+                )
                 Spacer(Modifier.height(16.dp))
-                PointsSection(onClicked = onRedeemReward,
+                PointsSection(
+                    point = point,
+                    onClicked = onRedeemReward,
                     modifier = Modifier.padding(horizontal = 24.dp))
                 Spacer(Modifier.height(16.dp))
                 RewardHistoryList(rewardHistoryList, modifier = Modifier.padding(horizontal = 24.dp))
@@ -60,12 +76,13 @@ fun RewardScreen(onRedeemReward: () -> Unit,
 @Composable
 private fun RewardScreenPreview() {
     TheCoffeeAppTheme {
-        RewardScreen({})
+        RewardScreen( {},Modifier, viewModel<CoffeeViewModel>(), {})
     }
 }
 
 @Composable
 fun PointsSection(
+    point: Int,
     modifier: Modifier = Modifier,
     onClicked: () -> Unit = {}
 ) {
@@ -101,7 +118,7 @@ fun PointsSection(
 }
 
 data class RewardHistory(
-    val name: String,
+    val type: CoffeeTypeData,
     val dateTime: LocalDateTime,
     val points: Int
 )
@@ -137,7 +154,7 @@ fun RewardHistoryItem(rewardHistory: RewardHistory, modifier: Modifier = Modifie
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
-            Text(rewardHistory.name, style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(rewardHistory.type.text), style = MaterialTheme.typography.bodyLarge)
             Text(
                 formattedDate,
                 style = MaterialTheme.typography.bodySmall,

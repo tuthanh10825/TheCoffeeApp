@@ -14,6 +14,11 @@ import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Mail
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
+import androidx.compose.material.icons.outlined.Save
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -21,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.thecoffeeapp.data.sampleProfileInfo
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
 
@@ -30,9 +36,14 @@ data class ProfileInfo(
     val phone: String,
     val address: String
 )
+
 @Composable
-fun ProfileScreen(profileInfo: ProfileInfo, modifier: Modifier = Modifier,
-                  onBackButton: () -> Unit, onTrailingIconClick: () -> Unit) {
+fun ProfileScreen(
+    modifier: Modifier = Modifier,
+                  onBackButton: () -> Unit,
+                  viewModel: CoffeeViewModel) {
+
+    var profileInfo = viewModel.userInfo.value
     PageCard(
         title = "Profile",
         modifier = modifier,
@@ -40,13 +51,25 @@ fun ProfileScreen(profileInfo: ProfileInfo, modifier: Modifier = Modifier,
         onBackClick = onBackButton,
         mainContent =  {
             ProfileItem(Icons.Outlined.Person, "Full name", profileInfo.name,
-                onTrailingIconClick = onTrailingIconClick)
+                onSave = {newName ->
+                    viewModel.updateUserInfo(profileInfo.copy(name = newName))
+                }
+            )
             ProfileItem(Icons.Outlined.Phone, "Phone number", profileInfo.phone,
-                onTrailingIconClick = onTrailingIconClick)
+                onSave = { newPhone ->
+                    viewModel.updateUserInfo(profileInfo.copy(phone = newPhone))
+                }
+            )
             ProfileItem(Icons.Outlined.Mail, "Email", profileInfo.email,
-                onTrailingIconClick = onTrailingIconClick)
+                onSave = { newEmail ->
+                    viewModel.updateUserInfo(profileInfo.copy(email = newEmail))
+                },
+            )
             ProfileItem(Icons.Outlined.LocationOn, "Address", profileInfo.address,
-                onTrailingIconClick = onTrailingIconClick)
+                onSave = { newAddress ->
+                    viewModel.updateUserInfo(profileInfo.copy(address = newAddress))
+                }
+            )
     })
 }
 
@@ -55,10 +78,13 @@ fun ProfileItem(
     icon: ImageVector,
     label: String,
     value: String,
-    onTrailingIconClick: (() -> Unit)? = null,
+    onSave : (String) -> Unit,
     trailingIcon: ImageVector? = Icons.Outlined.Edit, // Optional, configurable
     modifier: Modifier = Modifier
 ) {
+    var isEditing by remember { mutableStateOf(false) }
+    var localValue by remember { mutableStateOf(value) }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -86,23 +112,70 @@ fun ProfileItem(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline
             )
-            Text(
-                text = value,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                color = MaterialTheme.colorScheme.onBackground,
-                maxLines = Int.MAX_VALUE,
-                overflow = TextOverflow.Clip,
-            )
-
-        }
-
-        if (onTrailingIconClick != null && trailingIcon != null) {
-            IconButton(onClick = onTrailingIconClick) {
-                Icon(
-                    imageVector = trailingIcon,
-                    contentDescription = "Action",
-                )
+            if (isEditing) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TextField(
+                        value = value,
+                        onValueChange = {
+                            localValue = it
+                        },
+                        singleLine = true,
+                        textStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent
+                        ),
+                        modifier = Modifier.fillMaxWidth().weight(1f)
+                    )
+                    IconButton(
+                        onClick = {
+                            onSave(localValue)
+                            isEditing = false
+                        },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Save,
+                            contentDescription = "Save",
+                            tint = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
+                }
             }
+            else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = value,
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        maxLines = Int.MAX_VALUE,
+                        overflow = TextOverflow.Clip,
+                    )
+                    if (trailingIcon != null) {
+                        IconButton(
+                            onClick = { isEditing = true },
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = trailingIcon,
+                                contentDescription = "Edit",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    }
+                }
+            }
+
         }
     }
 }
@@ -114,7 +187,7 @@ private fun ProfileItemPreview() {
        ProfileItem(icon = Icons.Outlined.Person,
             label = "Name",
             value = "John Doe",
-            onTrailingIconClick = { /* Handle click */ },
+            onSave = { /* Handle click */ },
         )
     }
 }
@@ -124,9 +197,10 @@ private fun ProfileItemPreview() {
 private fun ProfileScreenPreview() {
    TheCoffeeAppTheme {
        ProfileScreen(
-           profileInfo = sampleProfileInfo,
            onBackButton = {},
-           onTrailingIconClick = {},
+           viewModel = viewModel<CoffeeViewModel>().apply {
+                updateUserInfo(sampleProfileInfo)
+           }
        )
    }
 }

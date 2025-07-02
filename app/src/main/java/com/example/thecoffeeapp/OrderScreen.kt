@@ -35,16 +35,25 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAbsoluteAlignment
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.runtime.rememberCoroutineScope
 import com.example.thecoffeeapp.component.PageCard
 import com.example.thecoffeeapp.data.sampleHist
 import com.example.thecoffeeapp.data.sampleOrders
 
+
+
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
+import kotlinx.coroutines.launch
 
 data class OrderInfo(
-    val coffeeType: String,
+    val coffeeType: CoffeeTypeData,
     val address: String,
     val cost: Float,
     val orderTime: LocalDateTime
@@ -84,7 +93,7 @@ fun OrderItem(order: OrderInfo, modifier: Modifier = Modifier) {
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = order.coffeeType,
+                    text = stringResource(order.coffeeType.text),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -108,7 +117,6 @@ fun OrderItem(order: OrderInfo, modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
     }
 }
 
@@ -122,10 +130,27 @@ private fun OrderItemReview() {
 }
 
 @Composable
-fun OrderList(list: List<OrderInfo>, modifier: Modifier = Modifier) {
+fun OrderList(
+    list: List<OrderInfo>,
+    modifier: Modifier = Modifier,
+    isHistoryOrders: Boolean = true,
+    onMoveToHistory: (OrderInfo) -> Unit = {},
+) {
     LazyColumn (modifier = modifier) {
        items(list) { item ->
-          OrderItem(item)
+            OrderItem(item)
+            if (!isHistoryOrders) {
+                // If it's an ongoing order, add a button to move it to history
+                Button(
+                    onClick = { onMoveToHistory(item) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    Text(text = "Move to History")
+                }
+            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
        }
     }
 }
@@ -165,7 +190,10 @@ private fun OrderListPreview() {
 //}
 
 @Composable
-fun OrderScreen(modifier: Modifier = Modifier) {
+fun OrderScreen(
+    onGivenOrder: (OrderInfo) -> Unit = {},
+    modifier: Modifier = Modifier,
+    onGoingOrderList: List<OrderInfo>, orderHistoryList: List<OrderInfo>) {
     var selectedTab by rememberSaveable { mutableStateOf(0) }
     var option = listOf("On going", "History")
     PageCard(
@@ -178,8 +206,12 @@ fun OrderScreen(modifier: Modifier = Modifier) {
             )
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
             when (selectedTab) {
-                0 -> OrderList(sampleOrders, modifier = Modifier.padding(32.dp))
-                1 -> OrderList(sampleHist, modifier = Modifier.padding(32.dp))
+                0 -> OrderList(onGoingOrderList, modifier = Modifier.padding(32.dp), false,
+                    onMoveToHistory = { order ->
+                        onGivenOrder(order) // Pass the order to the callback
+                    }
+                )
+                1 -> OrderList(orderHistoryList, modifier = Modifier.padding(32.dp))
             }
         },
         backButton = false,
@@ -223,7 +255,11 @@ fun OrderTabs(
 @Composable
 private fun OrderScreenPreview() {
     TheCoffeeAppTheme {
-        OrderScreen()
+        OrderScreen(
+            onGoingOrderList = sampleOrders,
+            orderHistoryList = sampleHist,
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }
 

@@ -17,6 +17,7 @@ import com.example.thecoffeeapp.component.RedeemCollection
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,6 +47,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.thecoffeeapp.component.WrapBox
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
 import kotlinx.coroutines.delay
@@ -54,19 +56,34 @@ import java.time.LocalTime
 
 @Composable
 fun HomeScreen(
+    coffeeCnt: Int,
     username: String,
+    onRedeemClick: () -> Unit = {},
     onProfileClick: () -> Unit,
+    onCartClick: () -> Unit,
+    onItemClick: (CoffeeTypeData) -> Unit = {},
     modifier: Modifier = Modifier
+
 ) {
+    LaunchedEffect(coffeeCnt) {
+        println("Recomposed with coffeeCnt = $coffeeCnt")
+    }
     Column(modifier = modifier.fillMaxHeight()) {
 
         Greeting(
             username = username,
             onProfileClick = onProfileClick,
+            onCartClick = onCartClick,
             modifier = Modifier.padding(horizontal = 26.dp, vertical = 30.dp)
         )
-        RedeemCollection(modifier = Modifier.padding(horizontal = 24.dp))
-        CoffeeTypeChoosing(modifier = modifier.padding(top = 40.dp).weight(1f))
+        RedeemCollection(
+            coffeeCnt = coffeeCnt,
+            modifier = Modifier.padding(horizontal = 24.dp),
+            onRedeemClick = onRedeemClick
+        )
+        CoffeeTypeChoosing(
+            onItemClicked = onItemClick,
+            modifier = modifier.padding(top = if(coffeeCnt >= 8) 3.dp else 50.dp).weight(1f))
     }
 }
 
@@ -84,7 +101,7 @@ fun HomeScreenPreview() {
         modifier = Modifier.systemBarsPadding().navigationBarsPadding()
 
     ) { padding ->
-        HomeScreen(username = "Tu Thanh", {}, modifier = Modifier.padding(padding))
+        HomeScreen(0, username = "Tu Thanh", {}, {}, {}, modifier = Modifier.padding(padding))
     }
 }
 
@@ -107,12 +124,14 @@ private val iconList = listOf(
 
 @Composable
 fun CoffeeTypeCard(
+    onItemClick: (CoffeeTypeData) -> Unit,
     modifier: Modifier = Modifier.Companion,
-    @DrawableRes drawable: Int,
-    @StringRes text: Int
+    type: CoffeeTypeData
+
 ) {
     Surface(
-        modifier = modifier,
+        modifier = modifier
+            .clickable(onClick = { onItemClick(type) }),
         color = MaterialTheme.colorScheme.surface,
         shape = MaterialTheme.shapes.medium
     ) {
@@ -121,7 +140,7 @@ fun CoffeeTypeCard(
             modifier = Modifier.Companion
         ) {
             Image(
-                painter = painterResource(drawable),
+                painter = painterResource(type.drawable),
                 contentDescription = null,
                 contentScale = ContentScale.Companion.Crop,
                 modifier = Modifier.Companion
@@ -129,7 +148,7 @@ fun CoffeeTypeCard(
                     .width(110.dp)
             )
             Text(
-                text = stringResource(text),
+                text = stringResource(type.text),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.Companion.padding(bottom = 28.dp)
             )
@@ -144,8 +163,10 @@ fun CoffeeTypeCardPreview() {
     TheCoffeeAppTheme {
         CoffeeTypeCard(
             modifier = Modifier.Companion.padding(8.dp),
-            drawable = R.drawable.type2_cappucino,
-            text = R.string.type2_cappuccino
+            onItemClick = {},
+            type = CoffeeTypeData( drawable = R.drawable.type2_cappucino,
+                text = R.string.type2_cappuccino
+            )
         )
     }
 }
@@ -153,6 +174,7 @@ fun CoffeeTypeCardPreview() {
 @Composable
 fun CoffeeTypeCollectionGrid(
     list: List<CoffeeTypeData>,
+    onItemClick: (CoffeeTypeData) -> Unit,
     modifier: Modifier = Modifier.Companion
 ){
     LazyVerticalGrid(
@@ -162,13 +184,16 @@ fun CoffeeTypeCollectionGrid(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(iconList) { item ->
-            CoffeeTypeCard(Modifier.Companion, item.drawable, item.text)
+            CoffeeTypeCard(
+                onItemClick = { onItemClick(item) },
+                Modifier.Companion, item)
         }
     }
 }
 
 @Composable
 fun CoffeeTypeChoosing(
+    onItemClicked: (CoffeeTypeData) -> Unit = {},
     modifier: Modifier = Modifier.Companion
 ) {
     WrapBox(
@@ -180,8 +205,10 @@ fun CoffeeTypeChoosing(
             )
         },
         mainContent = {
+            val coffeeTypeList = viewModel<CoffeeViewModel>().coffeeTypeList
             CoffeeTypeCollectionGrid(
-                listOf(),
+                list = coffeeTypeList,
+                onItemClick = onItemClicked,
                 Modifier.Companion.padding(bottom = 24.dp)
             )
         },
@@ -203,7 +230,7 @@ fun CoffeeTypeCollectionGridPreview() {
 fun Greeting(
     username: String,
     onProfileClick: () -> Unit,
-    onOrderClick: () -> Unit = {},
+    onCartClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var greeting by remember { mutableStateOf(getGreeting()) }
@@ -235,7 +262,7 @@ fun Greeting(
             horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             IconButton(
-                onClick = onOrderClick
+                onClick = onCartClick
             ) {
                 Icon(
                     imageVector = Icons.Outlined.ShoppingCart,
