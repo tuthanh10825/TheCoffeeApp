@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.example.thecoffeeapp.data.sampleRedeemList
 
@@ -35,7 +36,7 @@ fun RedeemScreen(
     redeemList: List<RedeemInfo>,
     modifier: Modifier = Modifier,
     onBackButton: () -> Unit,
-    onRedeem: () -> Unit
+    onRedeem: (CoffeeTypeData, RedeemInfo) -> Unit
 ) {
     PageCard(
         title = "Redeem",
@@ -47,7 +48,7 @@ fun RedeemScreen(
                 items(redeemList) { redeemInfo ->
                     RedeemItem(
                         redeemInfo = redeemInfo,
-                        onRedeem = onRedeem
+                        onRedeem = { onRedeem(redeemInfo.type, redeemInfo) }
                     )
                 }
             }
@@ -62,16 +63,17 @@ private fun RedeemScreenPreview() {
         RedeemScreen(
             redeemList = sampleRedeemList,
             onBackButton = {},
-            onRedeem = {}
+            onRedeem = { coffeeType, redeemInfo ->
+                // Handle redeem action
+            }
         )
     }
 }
 
 data class RedeemInfo(
-    val type: String,
+    val type: CoffeeTypeData,
     val validDate: LocalDate,
     val pointsRequired: Int,
-    @DrawableRes val image: Int
 )
 
 @Composable
@@ -89,7 +91,7 @@ fun RedeemItem(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
-                painter = painterResource(id = redeemInfo.image),
+                painter = painterResource(id = redeemInfo.type.drawable),
                 contentDescription = null,
                 modifier = Modifier
                     .size(60.dp)
@@ -100,7 +102,7 @@ fun RedeemItem(
 
             Column {
                 Text(
-                    text = redeemInfo.type,
+                    text = stringResource(redeemInfo.type.text),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onBackground
                 )
@@ -113,7 +115,7 @@ fun RedeemItem(
         }
 
         Button(
-            onClick = onRedeem,
+            onClick = { onRedeem() },
             shape = RoundedCornerShape(50),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2F3E46)),
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)

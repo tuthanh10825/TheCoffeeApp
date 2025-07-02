@@ -1,8 +1,5 @@
 package com.example.thecoffeeapp
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -12,21 +9,22 @@ import androidx.compose.material.icons.filled.Cake
 import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.NavigationRailItem
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
 
 @Composable
@@ -102,6 +100,27 @@ object Profile: Dest {
 object Redeem: Dest {
     override val icon = Icons.Default.Cake
     override val route = "redeem"
+}
+
+object CoffeeDetail: Dest {
+    override val icon = Icons.Default.Store
+    const val coffeeTypeArg = "coffeeType"
+    val arguments = listOf(
+        navArgument(coffeeTypeArg){
+            type = NavType.IntType
+        }
+    )
+    override val route = "coffee_detail"
+}
+
+object Cart: Dest {
+    override val icon = Icons.Default.ShoppingCart
+    override val route = "cart"
+}
+
+object OrderSuccess: Dest {
+    override val icon = Icons.Default.Receipt
+    override val route = "order_success"
 }
 
 val tabScreens = listOf(
