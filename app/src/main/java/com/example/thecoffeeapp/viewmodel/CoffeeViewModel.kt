@@ -1,22 +1,20 @@
 package com.example.thecoffeeapp.viewmodel
 
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.thecoffeeapp.data.sampleCoffeeTypes
-import com.example.thecoffeeapp.data.sampleProfileInfo
+import com.example.thecoffeeapp.data.local.db.sampleCoffeeTypes
+import com.example.thecoffeeapp.data.local.db.sampleProfileInfo
 import androidx.lifecycle.ViewModelProvider
-import com.example.thecoffeeapp.data.entity.OrderInfo
-import com.example.thecoffeeapp.data.entity.ProfileInfo
-import com.example.thecoffeeapp.Repository
-import com.example.thecoffeeapp.data.entity.RewardHistory
+import com.example.thecoffeeapp.data.local.entity.OrderInfo
+import com.example.thecoffeeapp.data.local.entity.ProfileInfo
+import com.example.thecoffeeapp.data.repository.Repository
+import com.example.thecoffeeapp.data.local.entity.RewardHistory
 import com.example.thecoffeeapp.ui.screens.BuyItem
 import com.example.thecoffeeapp.ui.screens.CoffeeDetailData
 import com.example.thecoffeeapp.ui.screens.CoffeeDetailDataState
 import com.example.thecoffeeapp.ui.screens.CoffeeTypeData
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map

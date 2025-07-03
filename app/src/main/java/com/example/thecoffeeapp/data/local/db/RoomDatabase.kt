@@ -1,16 +1,16 @@
-package com.example.thecoffeeapp.data
+package com.example.thecoffeeapp.data.local.db
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.example.thecoffeeapp.data.dao.OrderDao
-import com.example.thecoffeeapp.data.dao.ProfileDao
-import com.example.thecoffeeapp.data.dao.RewardDao
-import com.example.thecoffeeapp.data.entity.OrderInfo
-import com.example.thecoffeeapp.data.entity.ProfileInfo
-import com.example.thecoffeeapp.data.entity.RewardHistory
+import com.example.thecoffeeapp.data.local.dao.OrderDao
+import com.example.thecoffeeapp.data.local.dao.ProfileDao
+import com.example.thecoffeeapp.data.local.dao.RewardDao
+import com.example.thecoffeeapp.data.local.entity.OrderInfo
+import com.example.thecoffeeapp.data.local.entity.ProfileInfo
+import com.example.thecoffeeapp.data.local.entity.RewardHistory
 
 @Database(
     entities = [OrderInfo::class, RewardHistory::class, ProfileInfo::class],

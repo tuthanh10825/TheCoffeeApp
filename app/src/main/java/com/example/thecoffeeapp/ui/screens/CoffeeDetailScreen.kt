@@ -43,13 +43,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.thecoffeeapp.R
 import com.example.thecoffeeapp.ui.component.PageCard
-import com.example.thecoffeeapp.data.sampleCoffeeTypes
-import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
-import com.example.thecoffeeapp.viewmodel.CoffeeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

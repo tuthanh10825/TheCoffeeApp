@@ -1,12 +1,11 @@
-package com.example.thecoffeeapp
+package com.example.thecoffeeapp.data.repository
 
-import com.example.thecoffeeapp.data.dao.OrderDao
-import com.example.thecoffeeapp.data.dao.ProfileDao
-import com.example.thecoffeeapp.data.RepositoryInterface
-import com.example.thecoffeeapp.data.dao.RewardDao
-import com.example.thecoffeeapp.data.entity.OrderInfo
-import com.example.thecoffeeapp.data.entity.ProfileInfo
-import com.example.thecoffeeapp.data.entity.RewardHistory
+import com.example.thecoffeeapp.data.local.dao.OrderDao
+import com.example.thecoffeeapp.data.local.dao.ProfileDao
+import com.example.thecoffeeapp.data.local.dao.RewardDao
+import com.example.thecoffeeapp.data.local.entity.OrderInfo
+import com.example.thecoffeeapp.data.local.entity.ProfileInfo
+import com.example.thecoffeeapp.data.local.entity.RewardHistory
 import kotlinx.coroutines.flow.Flow
 
 class Repository(

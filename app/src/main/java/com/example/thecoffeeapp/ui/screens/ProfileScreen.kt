@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.thecoffeeapp.viewmodel.CoffeeViewModel
-import com.example.thecoffeeapp.data.sampleProfileInfo
+import com.example.thecoffeeapp.data.local.db.sampleProfileInfo
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
 
 @Composable

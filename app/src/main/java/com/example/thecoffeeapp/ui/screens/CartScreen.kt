@@ -44,7 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
-import com.example.thecoffeeapp.data.sampleCoffeeTypes
+import com.example.thecoffeeapp.data.local.db.sampleCoffeeTypes
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
 import kotlinx.coroutines.launch
 

@@ -1,8 +1,8 @@
-package com.example.thecoffeeapp.data
+package com.example.thecoffeeapp.data.repository
 
-import com.example.thecoffeeapp.data.entity.OrderInfo
-import com.example.thecoffeeapp.data.entity.ProfileInfo
-import com.example.thecoffeeapp.data.entity.RewardHistory
+import com.example.thecoffeeapp.data.local.entity.OrderInfo
+import com.example.thecoffeeapp.data.local.entity.ProfileInfo
+import com.example.thecoffeeapp.data.local.entity.RewardHistory
 import kotlinx.coroutines.flow.Flow
 
 interface RepositoryInterface {

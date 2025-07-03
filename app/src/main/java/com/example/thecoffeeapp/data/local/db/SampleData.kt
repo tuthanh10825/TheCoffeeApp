@@ -1,9 +1,9 @@
-package com.example.thecoffeeapp.data
+package com.example.thecoffeeapp.data.local.db
 
 import com.example.thecoffeeapp.ui.screens.CoffeeTypeData
 import com.example.thecoffeeapp.R
-import com.example.thecoffeeapp.data.entity.ProfileInfo
-import com.example.thecoffeeapp.data.entity.RedeemInfo
+import com.example.thecoffeeapp.data.local.entity.ProfileInfo
+import com.example.thecoffeeapp.data.local.entity.RedeemInfo
 import java.time.LocalDate
 
 val point = 0

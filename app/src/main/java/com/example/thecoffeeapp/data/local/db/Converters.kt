@@ -1,4 +1,4 @@
-package com.example.thecoffeeapp.data
+package com.example.thecoffeeapp.data.local.db
 
 import androidx.room.TypeConverter
 import com.example.thecoffeeapp.ui.screens.CoffeeTypeData

@@ -25,8 +25,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import com.example.thecoffeeapp.data.entity.RedeemInfo
-import com.example.thecoffeeapp.data.sampleRedeemList
+import com.example.thecoffeeapp.data.local.entity.RedeemInfo
+import com.example.thecoffeeapp.data.local.db.sampleRedeemList
 
 
 @Composable

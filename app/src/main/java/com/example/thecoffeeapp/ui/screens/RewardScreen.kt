@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.example.thecoffeeapp.viewmodel.CoffeeViewModel
 import com.example.thecoffeeapp.ui.component.PageCard
 import com.example.thecoffeeapp.ui.component.RedeemCollection
-import com.example.thecoffeeapp.data.entity.RewardHistory
+import com.example.thecoffeeapp.data.local.entity.RewardHistory
 
 import java.time.format.DateTimeFormatter
 

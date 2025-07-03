@@ -1,4 +1,4 @@
-package com.example.thecoffeeapp.data.entity
+package com.example.thecoffeeapp.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

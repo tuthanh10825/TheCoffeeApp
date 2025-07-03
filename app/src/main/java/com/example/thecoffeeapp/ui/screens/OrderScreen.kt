@@ -29,7 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.example.thecoffeeapp.ui.component.PageCard
-import com.example.thecoffeeapp.data.entity.OrderInfo
+import com.example.thecoffeeapp.data.local.entity.OrderInfo
 
 
 
