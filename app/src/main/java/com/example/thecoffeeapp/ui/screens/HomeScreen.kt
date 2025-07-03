@@ -1,19 +1,15 @@
-package com.example.thecoffeeapp
+package com.example.thecoffeeapp.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-import com.example.thecoffeeapp.component.RedeemCollection
+import com.example.thecoffeeapp.ui.component.RedeemCollection
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -47,9 +43,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.thecoffeeapp.component.WrapBox
-import com.example.thecoffeeapp.data.sampleCoffeeTypes
+import com.example.thecoffeeapp.R
+import com.example.thecoffeeapp.ui.component.WrapBox
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
 import kotlinx.coroutines.delay
 import java.time.LocalTime

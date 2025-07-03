@@ -1,7 +1,7 @@
 package com.example.thecoffeeapp.data
 
 import androidx.room.TypeConverter
-import com.example.thecoffeeapp.CoffeeTypeData
+import com.example.thecoffeeapp.ui.screens.CoffeeTypeData
 import com.google.gson.Gson
 import java.time.LocalDateTime
 

@@ -4,8 +4,13 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import com.example.thecoffeeapp.data.dao.OrderDao
+import com.example.thecoffeeapp.data.dao.ProfileDao
+import com.example.thecoffeeapp.data.dao.RewardDao
+import com.example.thecoffeeapp.data.entity.OrderInfo
+import com.example.thecoffeeapp.data.entity.ProfileInfo
+import com.example.thecoffeeapp.data.entity.RewardHistory
 
 @Database(
     entities = [OrderInfo::class, RewardHistory::class, ProfileInfo::class],

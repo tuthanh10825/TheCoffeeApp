@@ -1,4 +1,4 @@
-package com.example.thecoffeeapp
+package com.example.thecoffeeapp.ui.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
+import com.example.thecoffeeapp.navigation.*
 
 @Composable
 fun BottomNavBar(
@@ -71,60 +72,3 @@ fun BottomNavBarPreview() {
         }
     }
 }
-
-interface Dest {
-    val icon: ImageVector
-    val route: String
-}
-
-object Home : Dest {
-    override val icon = Icons.Default.Store
-    override val route = "home"
-}
-
-object Reward : Dest {
-    override val icon = Icons.Default.CardGiftcard
-    override val route = "reward"
-}
-
-object Orders : Dest {
-    override val icon = Icons.Default.Receipt
-    override val route = "orders"
-}
-
-object Profile: Dest {
-    override val icon = Icons.Default.Person
-    override val route = "profile"
-}
-
-object Redeem: Dest {
-    override val icon = Icons.Default.Cake
-    override val route = "redeem"
-}
-
-object CoffeeDetail: Dest {
-    override val icon = Icons.Default.Store
-    const val coffeeTypeArg = "coffeeType"
-    val arguments = listOf(
-        navArgument(coffeeTypeArg){
-            type = NavType.IntType
-        }
-    )
-    override val route = "coffee_detail"
-}
-
-object Cart: Dest {
-    override val icon = Icons.Default.ShoppingCart
-    override val route = "cart"
-}
-
-object OrderSuccess: Dest {
-    override val icon = Icons.Default.Receipt
-    override val route = "order_success"
-}
-
-val tabScreens = listOf(
-    Home,
-    Reward,
-    Orders
-)

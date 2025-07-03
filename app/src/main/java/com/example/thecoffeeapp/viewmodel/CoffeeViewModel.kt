@@ -1,28 +1,24 @@
-package com.example.thecoffeeapp
+package com.example.thecoffeeapp.viewmodel
 
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.thecoffeeapp.data.point
 import com.example.thecoffeeapp.data.sampleCoffeeTypes
 import com.example.thecoffeeapp.data.sampleProfileInfo
-import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.thecoffeeapp.data.OrderInfo
-import com.example.thecoffeeapp.data.ProfileInfo
-import com.example.thecoffeeapp.data.RedeemInfo
-import com.example.thecoffeeapp.data.Repository
-import com.example.thecoffeeapp.data.RewardHistory
+import com.example.thecoffeeapp.data.entity.OrderInfo
+import com.example.thecoffeeapp.data.entity.ProfileInfo
+import com.example.thecoffeeapp.Repository
+import com.example.thecoffeeapp.data.entity.RewardHistory
+import com.example.thecoffeeapp.ui.screens.BuyItem
+import com.example.thecoffeeapp.ui.screens.CoffeeDetailData
+import com.example.thecoffeeapp.ui.screens.CoffeeDetailDataState
+import com.example.thecoffeeapp.ui.screens.CoffeeTypeData
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -67,7 +63,7 @@ class CoffeeViewModel(
                 coffeeDetailDataState.size,
                 coffeeDetailDataState.select,
                 coffeeDetailDataState.ice,
-                )
+            )
         )
         _coffeeBuyList.add(buyItem)
     }
@@ -80,7 +76,10 @@ class CoffeeViewModel(
         // Here we can add the logic to handle the purchase of coffee items.
         // For now, we will just clear the buy list.
 
-        incrementCoffeeCount()
+        val profile = userInfo.value ?: sampleProfileInfo
+        var currentPoints = userInfo.value?.redeemPoint?:0
+        var address = userInfo.value?.address ?: "Unknown Address"
+        val now = LocalDateTime.now()
 
         for (item in _coffeeBuyList) {
             // Here we can add logic to handle each item in the buy list.
@@ -93,21 +92,28 @@ class CoffeeViewModel(
                     points = 10 // Assuming each coffee purchase gives 10 points
                 )
             addReward(reward)
-            val currentPoints = userInfo.value?.redeemPoint?:0
-            updateRedeemPoint(reward.points + currentPoints)
+            currentPoints += reward.points
             viewModelScope.launch {
                 repository.insertOrder(
                     OrderInfo(
                         coffeeType = item.coffeeType,
-                        address = userInfo.value?.address?: "Unknown Address",
+                        address = address,
                         cost = item.getPrice().toFloat(),
-                        orderTime = LocalDateTime.now(),
+                        orderTime = now,
                         status = false
                     )
                 )
             }
-        }
 
+        }
+        viewModelScope.launch {
+            repository.saveProfile(
+                profile.copy(
+                    coffeeCnt = coffeeCnt.value + 1,
+                    redeemPoint = currentPoints // Assuming each coffee gives 10 points
+                )
+            )
+        }
         _coffeeBuyList.clear()
     }
 
@@ -133,17 +139,25 @@ class CoffeeViewModel(
     fun incrementCoffeeCount() {
         viewModelScope.launch {
             val profile = userInfo.value
+            println("userInfo.value = $profile")
+
             if (profile != null) {
-                repository.saveProfile(profile.copy(coffeeCnt = profile.coffeeCnt + 1))
+
+                val newProfile = profile.copy(
+                    coffeeCnt = profile.coffeeCnt + 1,
+                )
+
+                repository.saveProfile(newProfile)
+
+            }
+            else {
+                // If profile is null, we can create a temporary profile
+                println("Profile is null, creating a temporary profile.")
             }
         }
     }
 
-    // User info
 
-    /*
-    Move to the database
-    */
 
     val userInfo: StateFlow<ProfileInfo?> = repository.profile
                 .stateIn(viewModelScope, SharingStarted.Eagerly, null)

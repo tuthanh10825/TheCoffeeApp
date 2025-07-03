@@ -1,4 +1,4 @@
-package com.example.thecoffeeapp
+package com.example.thecoffeeapp.ui.screens
 
 import java.time.format.DateTimeFormatter
 
@@ -28,8 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import com.example.thecoffeeapp.component.PageCard
-import com.example.thecoffeeapp.data.OrderInfo
+import com.example.thecoffeeapp.ui.component.PageCard
+import com.example.thecoffeeapp.data.entity.OrderInfo
 
 
 

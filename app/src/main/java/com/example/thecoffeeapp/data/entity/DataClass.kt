@@ -1,8 +1,8 @@
-package com.example.thecoffeeapp.data
+package com.example.thecoffeeapp.data.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.thecoffeeapp.CoffeeTypeData
+import com.example.thecoffeeapp.ui.screens.CoffeeTypeData
 import java.time.LocalDate
 import java.time.LocalDateTime
 

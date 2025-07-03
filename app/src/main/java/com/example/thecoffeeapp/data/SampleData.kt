@@ -1,9 +1,10 @@
 package com.example.thecoffeeapp.data
 
-import com.example.thecoffeeapp.CoffeeTypeData
+import com.example.thecoffeeapp.ui.screens.CoffeeTypeData
 import com.example.thecoffeeapp.R
+import com.example.thecoffeeapp.data.entity.ProfileInfo
+import com.example.thecoffeeapp.data.entity.RedeemInfo
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 val point = 0
 val coffeeCnt = 0
