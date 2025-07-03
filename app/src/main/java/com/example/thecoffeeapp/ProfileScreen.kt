@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.Mail
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.outlined.Save
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,44 +31,37 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.thecoffeeapp.data.sampleProfileInfo
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
 
-data class ProfileInfo(
-    val name: String,
-    val email: String,
-    val phone: String,
-    val address: String
-)
-
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
                   onBackButton: () -> Unit,
                   viewModel: CoffeeViewModel) {
 
-    var profileInfo = viewModel.userInfo.value
+    val profileInfo = viewModel.userInfo.collectAsState().value
     PageCard(
         title = "Profile",
         modifier = modifier,
         backButton = true,
         onBackClick = onBackButton,
         mainContent =  {
-            ProfileItem(Icons.Outlined.Person, "Full name", profileInfo.name,
+            ProfileItem(Icons.Outlined.Person, "Full name", profileInfo?.name?: "N/A",
                 onSave = {newName ->
-                    viewModel.updateUserInfo(profileInfo.copy(name = newName))
+                    viewModel.updateUserInfo(profileInfo!!.copy(name = newName))
                 }
             )
-            ProfileItem(Icons.Outlined.Phone, "Phone number", profileInfo.phone,
+            ProfileItem(Icons.Outlined.Phone, "Phone number", profileInfo?.phone?: "N/A",
                 onSave = { newPhone ->
-                    viewModel.updateUserInfo(profileInfo.copy(phone = newPhone))
+                    viewModel.updateUserInfo(profileInfo!!.copy(phone = newPhone))
                 }
             )
-            ProfileItem(Icons.Outlined.Mail, "Email", profileInfo.email,
+            ProfileItem(Icons.Outlined.Mail, "Email", profileInfo?.email?: "N/A",
                 onSave = { newEmail ->
-                    viewModel.updateUserInfo(profileInfo.copy(email = newEmail))
+                    viewModel.updateUserInfo(profileInfo!!.copy(email = newEmail))
                 },
             )
-            ProfileItem(Icons.Outlined.LocationOn, "Address", profileInfo.address,
+            ProfileItem(Icons.Outlined.LocationOn, "Address", profileInfo?.address?: "N/A",
                 onSave = { newAddress ->
-                    viewModel.updateUserInfo(profileInfo.copy(address = newAddress))
+                    viewModel.updateUserInfo(profileInfo!!.copy(address = newAddress))
                 }
             )
     })
@@ -119,17 +113,20 @@ fun ProfileItem(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     TextField(
-                        value = value,
+                        value = localValue,
                         onValueChange = {
                             localValue = it
                         },
                         singleLine = true,
                         textStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
                         colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent
+                            focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                            unfocusedIndicatorColor = MaterialTheme.colorScheme.outline,
+                            disabledIndicatorColor = MaterialTheme.colorScheme.outlineVariant,
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            cursorColor = MaterialTheme.colorScheme.primary
                         ),
                         modifier = Modifier.fillMaxWidth().weight(1f)
                     )

@@ -49,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.thecoffeeapp.component.WrapBox
+import com.example.thecoffeeapp.data.sampleCoffeeTypes
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
 import kotlinx.coroutines.delay
 import java.time.LocalTime
@@ -58,6 +59,7 @@ import java.time.LocalTime
 fun HomeScreen(
     coffeeCnt: Int,
     username: String,
+    coffeeTypeList: List<CoffeeTypeData>,
     onRedeemClick: () -> Unit = {},
     onProfileClick: () -> Unit,
     onCartClick: () -> Unit,
@@ -83,27 +85,11 @@ fun HomeScreen(
         )
         CoffeeTypeChoosing(
             onItemClicked = onItemClick,
+            coffeeTypeList = coffeeTypeList,
             modifier = modifier.padding(top = if(coffeeCnt >= 8) 3.dp else 50.dp).weight(1f))
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    Scaffold (
-        floatingActionButton = {
-            BottomNavBar(
-                Modifier
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-            )
-        },
-        floatingActionButtonPosition = FabPosition.Center,
-        modifier = Modifier.systemBarsPadding().navigationBarsPadding()
-
-    ) { padding ->
-        HomeScreen(0, username = "Tu Thanh", {}, {}, {}, modifier = Modifier.padding(padding))
-    }
-}
 
 
 
@@ -193,6 +179,7 @@ fun CoffeeTypeCollectionGrid(
 
 @Composable
 fun CoffeeTypeChoosing(
+    coffeeTypeList: List<CoffeeTypeData>,
     onItemClicked: (CoffeeTypeData) -> Unit = {},
     modifier: Modifier = Modifier.Companion
 ) {
@@ -205,7 +192,7 @@ fun CoffeeTypeChoosing(
             )
         },
         mainContent = {
-            val coffeeTypeList = viewModel<CoffeeViewModel>().coffeeTypeList
+            val coffeeTypeList = coffeeTypeList
             CoffeeTypeCollectionGrid(
                 list = coffeeTypeList,
                 onItemClick = onItemClicked,
@@ -218,13 +205,6 @@ fun CoffeeTypeChoosing(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun CoffeeTypeCollectionGridPreview() {
-    TheCoffeeAppTheme {
-        CoffeeTypeChoosing()
-    }
-}
 
 @Composable
 fun Greeting(

@@ -13,6 +13,15 @@ lifecycleViewmodelComposeAndroid = "2.9.1"
 material3AdaptiveNavigationSuite = "1.4.0-alpha16"
 navigationComposeAndroid = "2.9.0"
 coreSplashscreen = "1.2.0-beta02"
+roomKtx = "2.7.2"
+roomRuntime = "2.7.2"
+roomCompiler = "2.7.2"
+gson = "2.13.1"
+lifecycleViewmodel = "2.9.1"
+lifecycleViewmodelKtx = "2.9.1"
+kotlinKsp = "1.4.0-rc-dev-experimental-20200828"
+comGoogleDevtoolsKspGradlePlugin = "1.5.30-1.0.0"
+symbolProcessingGradlePlugin = "1.5.30-1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,9 +43,15 @@ androidx-lifecycle-viewmodel-compose-android = { group = "androidx.lifecycle", n
 androidx-material3-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite", version.ref = "material3AdaptiveNavigationSuite" }
 androidx-navigation-compose-android = { group = "androidx.navigation", name = "navigation-compose-android", version.ref = "navigationComposeAndroid" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomRuntime" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCompiler" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "lifecycleViewmodel" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+symbol-processing-gradle-plugin = { group = "com.google.devtools.ksp", name = "symbol-processing-gradle-plugin", version.ref = "symbolProcessingGradlePlugin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-

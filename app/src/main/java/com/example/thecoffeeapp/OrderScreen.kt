@@ -1,8 +1,5 @@
 package com.example.thecoffeeapp
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 import androidx.compose.foundation.layout.Column
@@ -14,51 +11,29 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocalCafe
-import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.outlined.LocalCafe
 import androidx.compose.material.icons.outlined.Place
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.BiasAbsoluteAlignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxState
-import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.runtime.rememberCoroutineScope
 import com.example.thecoffeeapp.component.PageCard
-import com.example.thecoffeeapp.data.sampleHist
-import com.example.thecoffeeapp.data.sampleOrders
+import com.example.thecoffeeapp.data.OrderInfo
 
 
 
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
-import kotlinx.coroutines.launch
-
-data class OrderInfo(
-    val coffeeType: CoffeeTypeData,
-    val address: String,
-    val cost: Float,
-    val orderTime: LocalDateTime
-)
-
 
 
 @Composable
@@ -120,15 +95,6 @@ fun OrderItem(order: OrderInfo, modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun OrderItemReview() {
-    TheCoffeeAppTheme {
-        OrderItem(sampleOrders.get(0))
-    }
-
-}
-
 @Composable
 fun OrderList(
     list: List<OrderInfo>,
@@ -136,31 +102,34 @@ fun OrderList(
     isHistoryOrders: Boolean = true,
     onMoveToHistory: (OrderInfo) -> Unit = {},
 ) {
-    LazyColumn (modifier = modifier) {
+    LazyColumn (modifier = modifier
+        .padding(bottom = 80.dp)
+    ) {
        items(list) { item ->
-            OrderItem(item)
-            if (!isHistoryOrders) {
-                // If it's an ongoing order, add a button to move it to history
-                Button(
-                    onClick = { onMoveToHistory(item) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                ) {
-                    Text(text = "Move to History")
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                OrderItem(item)
+                if (!isHistoryOrders) {
+                    // If it's an ongoing order, add a button to move it to history
+                    Button(
+                        onClick = { onMoveToHistory(item) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Text(text = "Move to History")
+                    }
                 }
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    thickness = 1.dp
+                )
             }
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
        }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-private fun OrderListPreview() {
-   OrderList(sampleOrders, modifier = Modifier.padding(32.dp))
-}
-
 
 
 //// TODO: Use ViewModel to handle the business logic and state management
@@ -199,19 +168,29 @@ fun OrderScreen(
     PageCard(
         title = "My Order",
         mainContent = {
-            OrderTabs(
-                selectedTab = selectedTab,
-                option = option,
-                onTabSelected = { selectedTab = it },
+            Column(
+                modifier = modifier
             )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
-            when (selectedTab) {
-                0 -> OrderList(onGoingOrderList, modifier = Modifier.padding(32.dp), false,
-                    onMoveToHistory = { order ->
-                        onGivenOrder(order) // Pass the order to the callback
-                    }
+            {
+                OrderTabs(
+                    selectedTab = selectedTab,
+                    option = option,
+                    onTabSelected = { selectedTab = it },
                 )
-                1 -> OrderList(orderHistoryList, modifier = Modifier.padding(32.dp))
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    thickness = 1.dp
+                )
+                when (selectedTab) {
+                    0 -> OrderList(
+                        onGoingOrderList, modifier = Modifier.padding(32.dp), false,
+                        onMoveToHistory = { order ->
+                            onGivenOrder(order) // Pass the order to the callback
+                        }
+                    )
+
+                    1 -> OrderList(orderHistoryList, modifier = Modifier.padding(32.dp))
+                }
             }
         },
         backButton = false,
@@ -251,17 +230,7 @@ fun OrderTabs(
     }
 }
 
-@Preview (showBackground = true)
-@Composable
-private fun OrderScreenPreview() {
-    TheCoffeeAppTheme {
-        OrderScreen(
-            onGoingOrderList = sampleOrders,
-            orderHistoryList = sampleHist,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
+
 
 @Preview(showBackground = true)
 @Composable

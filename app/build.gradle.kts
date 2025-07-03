@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -39,6 +42,11 @@ android {
     }
 }
 
+configurations.all {
+    exclude(group = "com.intellij", module = "annotations")
+}
+
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -54,6 +62,15 @@ dependencies {
     implementation(libs.androidx.material3.adaptive.navigation.suite)
     implementation(libs.androidx.navigation.compose.android)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.compiler)
+    implementation(libs.gson)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+
+    ksp("androidx.room:room-compiler:${libs.versions.roomCompiler.get()}")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
