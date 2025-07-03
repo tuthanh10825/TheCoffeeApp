@@ -1,6 +1,5 @@
 package com.example.thecoffeeapp
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,7 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.thecoffeeapp.component.PageCard
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
-import java.time.LocalDate
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,7 +25,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import com.example.thecoffeeapp.data.RedeemInfo
 import com.example.thecoffeeapp.data.sampleRedeemList
 
 
@@ -69,12 +67,6 @@ private fun RedeemScreenPreview() {
         )
     }
 }
-
-data class RedeemInfo(
-    val type: CoffeeTypeData,
-    val validDate: LocalDate,
-    val pointsRequired: Int,
-)
 
 @Composable
 fun RedeemItem(

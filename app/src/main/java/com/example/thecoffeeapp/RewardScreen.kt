@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,11 +15,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,9 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.thecoffeeapp.component.PageCard
 import com.example.thecoffeeapp.component.RedeemCollection
+import com.example.thecoffeeapp.data.RewardHistory
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
 
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -46,9 +43,11 @@ fun RewardScreen(
 ) {
 
 
-    val rewardHistoryList = viewModel.rewardList.toMutableStateList()
-    val point = viewModel.redeemPoint.value
-    val coffeeCnt = viewModel.coffeeCnt.value
+    val rewardHistoryList = viewModel.rewardList.collectAsState().value
+    val point = viewModel.redeemPoint.collectAsState().value
+    val coffeeCnt = viewModel.coffeeCnt.collectAsState().value
+
+
     PageCard(
         title = "Reward",
         mainContent = {
@@ -71,14 +70,6 @@ fun RewardScreen(
     )
 }
 
-
-@Preview(showBackground = true)
-@Composable
-private fun RewardScreenPreview() {
-    TheCoffeeAppTheme {
-        RewardScreen( {},Modifier, viewModel<CoffeeViewModel>(), {})
-    }
-}
 
 @Composable
 fun PointsSection(
@@ -116,12 +107,6 @@ fun PointsSection(
         }
     }
 }
-
-data class RewardHistory(
-    val type: CoffeeTypeData,
-    val dateTime: LocalDateTime,
-    val points: Int
-)
 
 @Composable
 fun RewardHistoryList(list: List<RewardHistory>, modifier: Modifier = Modifier) {

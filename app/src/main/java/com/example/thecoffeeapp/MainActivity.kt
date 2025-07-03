@@ -16,6 +16,7 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,6 +25,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -35,27 +37,36 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.navigation.*
 import androidx.navigation.compose.*
+import com.example.thecoffeeapp.data.CoffeeRoomDatabase
+import com.example.thecoffeeapp.data.Repository
 import kotlinx.coroutines.launch
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setKeepOnScreenCondition { false }
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val database = CoffeeRoomDatabase.getDatabase(applicationContext)
+        val repository = Repository(database.profileDao(), database.orderDao(), database.rewardDao())
+
+        val factory = CoffeeViewModelFactory(repository)
+        val coffeeViewModel = ViewModelProvider(this, factory)[CoffeeViewModel::class.java]
         setContent {
+            var isSplashDone by rememberSaveable { mutableStateOf(false) }
+
+            LaunchedEffect(Unit) {
+                delay(2000)
+                isSplashDone = true
+            }
+
             TheCoffeeAppTheme {
-                var isSplashDone by rememberSaveable { mutableStateOf(false) }
-
-                LaunchedEffect(Unit) {
-                    delay(2000)
-                    isSplashDone = true
-                }
-
                 if (isSplashDone) {
-                    MyApp()
+                    MyApp(coffeeViewModel)
                 } else {
                     SplashScreen()
                 }
+
             }
         }
     }
@@ -64,15 +75,26 @@ class MainActivity : ComponentActivity() {
 
 // TODO: Extract the back navigation logic to a separate function
 @Composable
-fun MyApp() {
+fun MyApp(
+    coffeeViewModel: CoffeeViewModel
+) {
     var navController = rememberNavController()
     var currentScreen by remember { mutableStateOf<Dest>(Home) }
     var isShowingBottomBar by rememberSaveable { mutableStateOf(true) }
-    val profileInfo by remember {
-        mutableStateOf<ProfileInfo>(sampleProfileInfo)
-    }
+
+
     val redeemList by remember {mutableStateOf(sampleRedeemList)}
-    val coffeeViewModel = viewModel<CoffeeViewModel>()
+
+    if (coffeeViewModel.userInfo.collectAsState().value == null) {
+        coffeeViewModel.createTempProfile()
+    }
+
+    val profileInfo = coffeeViewModel.userInfo
+    val profileInfoState by profileInfo.collectAsState()
+
+    val onGoingOrderListState = coffeeViewModel.onGoingOrderList.collectAsState()
+    val orderHistoryListState = coffeeViewModel.historyOrderList.collectAsState()
+
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -102,8 +124,8 @@ fun MyApp() {
         ) {
             composable(Home.route) {
                 HomeScreen(
-                    coffeeCnt = coffeeViewModel.coffeeCnt.value,
-                    username = profileInfo.name,
+                coffeeCnt = profileInfoState?.coffeeCnt ?: 0,
+                username = profileInfoState?.name ?: "",
                     onProfileClick = {
                         isShowingBottomBar = false
                         navController.navigateSingleTopTo(Profile.route)
@@ -121,7 +143,8 @@ fun MyApp() {
                         coffeeViewModel.updateLoyaltyCoffeeCount(
                             coffeeViewModel.coffeeCnt.value - 8
                         )
-                    }
+                    },
+                    coffeeTypeList = coffeeViewModel.coffeeTypeList
                 )
             }
             composable(Reward.route) {
@@ -144,8 +167,8 @@ fun MyApp() {
                     onGivenOrder = { orderInfo ->
                         coffeeViewModel.moveToCompletedOrders(orderInfo)
                     },
-                    onGoingOrderList = coffeeViewModel.onGoingOrderList,
-                    orderHistoryList = coffeeViewModel.historyOrderList,
+                    onGoingOrderList = onGoingOrderListState.value,
+                    orderHistoryList = orderHistoryListState.value,
                     modifier = Modifier.padding(padding)
                 )
             }
@@ -168,7 +191,9 @@ fun MyApp() {
                     onRedeem = { coffeeType, redeemInfo ->
                         val point = coffeeViewModel.redeemPoint
                         if (point.value >= redeemInfo.pointsRequired) {
-                            coffeeViewModel.updateRedeemPoint(redeemInfo)
+                            coffeeViewModel.updateRedeemPoint(
+                                point.value - redeemInfo.pointsRequired
+                            )
                             isShowingBottomBar = false
                             navController.navigateSingleTopTo("${CoffeeDetail.route}/${coffeeType.text}/true")
                         } else {
