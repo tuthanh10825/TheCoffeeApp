@@ -1,4 +1,4 @@
-package com.example.thecoffeeapp
+package com.example.thecoffeeapp.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,17 +19,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.thecoffeeapp.component.PageCard
-import com.example.thecoffeeapp.component.RedeemCollection
-import com.example.thecoffeeapp.data.RewardHistory
-import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
+import com.example.thecoffeeapp.viewmodel.CoffeeViewModel
+import com.example.thecoffeeapp.ui.component.PageCard
+import com.example.thecoffeeapp.ui.component.RedeemCollection
+import com.example.thecoffeeapp.data.entity.RewardHistory
 
 import java.time.format.DateTimeFormatter
 
@@ -37,8 +34,8 @@ import java.time.format.DateTimeFormatter
 fun RewardScreen(
 
     onRedeemReward: () -> Unit,
-     modifier: Modifier = Modifier,
-     viewModel: CoffeeViewModel,
+    modifier: Modifier = Modifier,
+    viewModel: CoffeeViewModel,
     onRedeemLoyalty : () -> Unit,
 ) {
 
@@ -118,6 +115,7 @@ fun RewardHistoryList(list: List<RewardHistory>, modifier: Modifier = Modifier) 
             modifier = Modifier.padding(vertical = 16.dp)
         )
         LazyColumn(
+            modifier = Modifier.padding(bottom = 40.dp)
         ) {
             items(list) { item ->
                 RewardHistoryItem(item)

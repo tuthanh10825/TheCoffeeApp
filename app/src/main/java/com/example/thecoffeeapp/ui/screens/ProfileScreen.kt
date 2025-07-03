@@ -1,15 +1,13 @@
-package com.example.thecoffeeapp
+package com.example.thecoffeeapp.ui.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.thecoffeeapp.component.PageCard
+import com.example.thecoffeeapp.ui.component.PageCard
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.LocalPolice
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Mail
 import androidx.compose.material.icons.outlined.Person
@@ -28,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.thecoffeeapp.viewmodel.CoffeeViewModel
 import com.example.thecoffeeapp.data.sampleProfileInfo
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
 
@@ -35,7 +34,8 @@ import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
 fun ProfileScreen(
     modifier: Modifier = Modifier,
                   onBackButton: () -> Unit,
-                  viewModel: CoffeeViewModel) {
+                  viewModel: CoffeeViewModel
+) {
 
     val profileInfo = viewModel.userInfo.collectAsState().value
     PageCard(

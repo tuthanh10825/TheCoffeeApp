@@ -1,5 +1,8 @@
 package com.example.thecoffeeapp.data
 
+import com.example.thecoffeeapp.data.entity.OrderInfo
+import com.example.thecoffeeapp.data.entity.ProfileInfo
+import com.example.thecoffeeapp.data.entity.RewardHistory
 import kotlinx.coroutines.flow.Flow
 
 interface RepositoryInterface {

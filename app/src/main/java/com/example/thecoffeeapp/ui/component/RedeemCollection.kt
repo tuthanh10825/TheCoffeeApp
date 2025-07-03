@@ -1,4 +1,4 @@
-package com.example.thecoffeeapp.component
+package com.example.thecoffeeapp.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
@@ -18,8 +18,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.thecoffeeapp.CoffeeViewModel
 import com.example.thecoffeeapp.R
 
 @Composable

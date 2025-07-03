@@ -21,25 +21,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.thecoffeeapp.data.sampleProfileInfo
 import com.example.thecoffeeapp.data.sampleRedeemList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.navigation.*
-import androidx.navigation.compose.*
 import com.example.thecoffeeapp.data.CoffeeRoomDatabase
-import com.example.thecoffeeapp.data.Repository
-import kotlinx.coroutines.launch
+import com.example.thecoffeeapp.ui.component.BottomNavBar
+import com.example.thecoffeeapp.ui.screens.*
+import com.example.thecoffeeapp.navigation.*
+import com.example.thecoffeeapp.viewmodel.CoffeeViewModel
+import com.example.thecoffeeapp.viewmodel.CoffeeViewModelFactory
 
 
 class MainActivity : ComponentActivity() {
@@ -124,8 +123,8 @@ fun MyApp(
         ) {
             composable(Home.route) {
                 HomeScreen(
-                coffeeCnt = profileInfoState?.coffeeCnt ?: 0,
-                username = profileInfoState?.name ?: "",
+                    coffeeCnt = profileInfoState?.coffeeCnt ?: 0,
+                    username = profileInfoState?.name ?: "",
                     onProfileClick = {
                         isShowingBottomBar = false
                         navController.navigateSingleTopTo(Profile.route)
@@ -173,7 +172,8 @@ fun MyApp(
                 )
             }
             composable(Profile.route) {
-                ProfileScreen(modifier = Modifier.padding(padding),
+                ProfileScreen(
+                    modifier = Modifier.padding(padding),
                     onBackButton = {
                         isShowingBottomBar = true
                         navController.navigateUp()
@@ -232,8 +232,10 @@ fun MyApp(
                     coffeeData = coffeeData,
                     coffeeDetailDataState = coffeeDetail,
                     onBackButton = {
-                        val previousDestination = navController.previousBackStackEntry?.destination?.route
-                        isShowingBottomBar = previousDestination in listOf(Home.route, Reward.route, Orders.route)
+                        val previousDestination =
+                            navController.previousBackStackEntry?.destination?.route
+                        isShowingBottomBar =
+                            previousDestination in listOf(Home.route, Reward.route, Orders.route)
                         currentScreen = when (previousDestination) {
                             Home.route -> Home
                             Reward.route -> Reward
@@ -246,14 +248,16 @@ fun MyApp(
                         isShowingBottomBar = false
                         coffeeViewModel.addCoffeeOrderItem(
                             isRedeemed = isRedeem,
-                            coffeeData?: CoffeeTypeData(
-                            drawable = R.drawable.ic_coffee,
-                            text = 0, // Fallback in case of null
-                        ),
+                            coffeeData ?: CoffeeTypeData(
+                                drawable = R.drawable.ic_coffee,
+                                text = 0, // Fallback in case of null
+                            ),
                             coffeeDetail
                         )
                         navController.navigate(Cart.route) {
-                            popUpTo(CoffeeDetail.route) { inclusive = true } // This removes CoffeeDetail from backstack
+                            popUpTo(CoffeeDetail.route) {
+                                inclusive = true
+                            } // This removes CoffeeDetail from backstack
                             launchSingleTop = true
                         }
                     },
@@ -269,7 +273,8 @@ fun MyApp(
                 CartScreen(
                     cartItems = cartItems,
                     onBackButton = {
-                        val previousDestination = navController.previousBackStackEntry?.destination?.route
+                        val previousDestination =
+                            navController.previousBackStackEntry?.destination?.route
                         isShowingBottomBar = previousDestination == Home.route
                         navController.navigateUp()
                     },
@@ -279,7 +284,7 @@ fun MyApp(
                         navController.navigateSingleTopTo(OrderSuccess.route)
                     },
                     modifier = Modifier.padding(padding),
-                    onDeleteItem = {buyItem ->
+                    onDeleteItem = { buyItem ->
                         coffeeViewModel.removeCoffeeOrderItem(buyItem) // Remove item from cart
                     }
                 )

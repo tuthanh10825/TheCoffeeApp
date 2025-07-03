@@ -1,10 +1,13 @@
-package com.example.thecoffeeapp.data
+package com.example.thecoffeeapp.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.thecoffeeapp.data.entity.OrderInfo
+import com.example.thecoffeeapp.data.entity.ProfileInfo
+import com.example.thecoffeeapp.data.entity.RewardHistory
 import kotlinx.coroutines.flow.Flow
 
 

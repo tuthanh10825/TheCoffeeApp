@@ -1,4 +1,4 @@
-package com.example.thecoffeeapp
+package com.example.thecoffeeapp.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -35,10 +35,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.thecoffeeapp.component.PageCard
+import com.example.thecoffeeapp.R
+import com.example.thecoffeeapp.ui.component.PageCard
 import com.example.thecoffeeapp.data.sampleCoffeeTypes
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
 
@@ -72,7 +74,7 @@ fun CoffeeDetailScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 80.dp, vertical = 10.dp),
-                    contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                    contentScale = ContentScale.Crop,
                 )
             }
 

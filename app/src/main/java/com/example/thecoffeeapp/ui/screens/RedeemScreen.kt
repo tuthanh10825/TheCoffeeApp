@@ -1,4 +1,4 @@
-package com.example.thecoffeeapp
+package com.example.thecoffeeapp.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.thecoffeeapp.component.PageCard
+import com.example.thecoffeeapp.ui.component.PageCard
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -25,7 +25,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import com.example.thecoffeeapp.data.RedeemInfo
+import com.example.thecoffeeapp.data.entity.RedeemInfo
 import com.example.thecoffeeapp.data.sampleRedeemList
 
 
