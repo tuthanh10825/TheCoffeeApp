@@ -9,9 +9,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.unit.dp
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -23,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
@@ -73,6 +76,7 @@ class MainActivity : ComponentActivity() {
 
 
 // TODO: Extract the back navigation logic to a separate function
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyApp(
     coffeeViewModel: CoffeeViewModel
@@ -96,7 +100,7 @@ fun MyApp(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-
+    val showBottomSheet = remember { mutableStateOf(false) }
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -185,8 +189,13 @@ fun MyApp(
                 RedeemScreen(
                     redeemList = redeemList,
                     onBackButton = {
-                        isShowingBottomBar = true
-                        navController.navigateUp()
+                        // isShowingBottomBar = true
+                        // navController.navigateUp()
+                        handleBackNavigation(
+                            navController,
+                            { isShowingBottomBar = it },
+                            { currentScreen = it }
+                        )
                     },
                     onRedeem = { coffeeType, redeemInfo ->
                         val point = coffeeViewModel.redeemPoint
@@ -232,17 +241,22 @@ fun MyApp(
                     coffeeData = coffeeData,
                     coffeeDetailDataState = coffeeDetail,
                     onBackButton = {
-                        val previousDestination =
-                            navController.previousBackStackEntry?.destination?.route
-                        isShowingBottomBar =
-                            previousDestination in listOf(Home.route, Reward.route, Orders.route)
-                        currentScreen = when (previousDestination) {
-                            Home.route -> Home
-                            Reward.route -> Reward
-                            Orders.route -> Orders
-                            else -> Home // Default to Home if no previous destination matches
-                        }
-                        navController.navigateUp()
+                        // val previousDestination =
+                        //     navController.previousBackStackEntry?.destination?.route
+                        // isShowingBottomBar =
+                        //     previousDestination in listOf(Home.route, Reward.route, Orders.route)
+                        // currentScreen = when (previousDestination) {
+                        //     Home.route -> Home
+                        //     Reward.route -> Reward
+                        //     Orders.route -> Orders
+                        //     else -> Home // Default to Home if no previous destination matches
+                        // }
+                        // navController.navigateUp()
+                        handleBackNavigation(
+                            navController,
+                            { isShowingBottomBar = it },
+                            { currentScreen = it }
+                        )
                     },
                     onAddToCart = {
                         isShowingBottomBar = false
@@ -261,10 +275,7 @@ fun MyApp(
                             launchSingleTop = true
                         }
                     },
-                    onRightButtonClick = {
-                        isShowingBottomBar = false
-                        navController.navigateSingleTopTo(Cart.route)
-                    },
+                    coffeeBuyList = coffeeViewModel.coffeeBuyList.toMutableStateList(),
                     modifier = Modifier.padding(padding)
                 )
             }
@@ -302,10 +313,4 @@ fun MyApp(
     }
 }
 
-
-fun NavHostController.navigateSingleTopTo(route: String) =
-    this.navigate(route) {
-        launchSingleTop = true
-        restoreState = true
-    }
 

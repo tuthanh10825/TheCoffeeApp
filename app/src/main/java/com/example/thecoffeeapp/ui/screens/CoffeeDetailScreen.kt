@@ -5,11 +5,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.Add
@@ -17,16 +20,19 @@ import androidx.compose.material.icons.filled.LocalCafe
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,7 +49,9 @@ import com.example.thecoffeeapp.R
 import com.example.thecoffeeapp.ui.component.PageCard
 import com.example.thecoffeeapp.data.sampleCoffeeTypes
 import com.example.thecoffeeapp.ui.theme.TheCoffeeAppTheme
+import com.example.thecoffeeapp.viewmodel.CoffeeViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CoffeeDetailScreen(
     isRedeemed: Boolean,
@@ -51,16 +59,17 @@ fun CoffeeDetailScreen(
     coffeeDetailDataState: CoffeeDetailDataState,
     onBackButton: () -> Unit,
     onAddToCart: () -> Unit,
-    onRightButtonClick: () -> Unit,
+    coffeeBuyList: MutableList<BuyItem>,
     modifier: Modifier
 ) {
+    var showBottomSheet by remember { mutableStateOf(false) }
     PageCard(
         title = "Details",
         backButton = true,
         onBackClick = onBackButton,
         rightButton = true,
         rightButtonIcon = Icons.Outlined.ShoppingCart,
-        onRightButtonClick = onRightButtonClick,
+        onRightButtonClick = {showBottomSheet = true},
         mainContent = {
             Surface (modifier = modifier
                 .fillMaxWidth()
@@ -281,6 +290,43 @@ fun CoffeeDetailScreen(
                     )
                 }
             }
+            if (showBottomSheet) {
+                ModalBottomSheet(
+                    onDismissRequest = { showBottomSheet = false },
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    shape = MaterialTheme.shapes.large,
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    if (coffeeBuyList.isEmpty()) {
+                        Text(
+                            "Your cart is empty",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .wrapContentSize(Alignment.Center)
+                                .padding(bottom = 250.dp)
+                        )
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 24.dp, vertical = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(20.dp)
+                        ) {
+                            coffeeBuyList.forEach { buyItem ->
+                                item {
+                                    CartItem(
+                                        buyItem,
+                                        onDeleteItem = { buyItem ->
+                                            coffeeBuyList.remove(buyItem)
+                                        },
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     )
 }
@@ -378,29 +424,5 @@ fun rememberCoffeeDetailData(initial: CoffeeDetailDataState): CoffeeDetailDataSt
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun CoffeeDetailScreenPreview() {
-    TheCoffeeAppTheme {
-        CoffeeDetailScreen(
-            false,
-            coffeeData = sampleCoffeeTypes.first(),
-            coffeeDetailDataState = CoffeeDetailDataState(),
-            onBackButton = {},
-            onAddToCart = {},
-            onRightButtonClick = {},
-            modifier = Modifier
-        )
-    }
-
-}
-
 fun Double.format(digits: Int) = "%.${digits}f".format(this)
 fun Float.format(digits: Int) = "%.${digits}f".format(this)
-
-@Composable
-fun optionSelect(
-    modifier: Modifier = Modifier
-) {
-    
-}
