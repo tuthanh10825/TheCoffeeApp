@@ -1,21 +1,39 @@
 package com.example.thecoffeeapp.navigation
 
+import android.app.Activity
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.thecoffeeapp.MainActivity
 import com.example.thecoffeeapp.R
 import com.example.thecoffeeapp.data.local.entity.ProfileInfo
 import com.example.thecoffeeapp.data.local.entity.RedeemInfo
+import com.example.thecoffeeapp.ui.component.createNotificationChannel
+import com.example.thecoffeeapp.ui.component.sendNotification
 import com.example.thecoffeeapp.ui.screens.CartScreen
 import com.example.thecoffeeapp.ui.screens.CoffeeDetailDataState
 import com.example.thecoffeeapp.ui.screens.CoffeeDetailScreen
@@ -29,10 +47,12 @@ import com.example.thecoffeeapp.ui.screens.RewardScreen
 import com.example.thecoffeeapp.ui.screens.rememberCoffeeDetailData
 import com.example.thecoffeeapp.viewmodel.CoffeeViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun AppNavHost(
+    context: Context,
     navController: NavHostController,
     padding: PaddingValues,
     coffeeViewModel: CoffeeViewModel,
@@ -45,6 +65,17 @@ fun AppNavHost(
 ) {
     val onGoingOrderListState = coffeeViewModel.onGoingOrderList.collectAsState()
     val orderHistoryListState = coffeeViewModel.historyOrderList.collectAsState()
+    val context = navController.context
+
+    var backPressedOnce by rememberSaveable { mutableStateOf(false) }
+
+    // Timer reset after delay
+    LaunchedEffect(backPressedOnce) {
+        if (backPressedOnce) {
+            delay(2000) // 2 seconds window
+            backPressedOnce = false
+        }
+    }
 
     NavHost(
         navController = navController,
@@ -52,6 +83,25 @@ fun AppNavHost(
         modifier = Modifier.padding(padding)
     ) {
         composable(Home.route) {
+            BackHandler {
+                if (navController.previousBackStackEntry != null) {
+                    handleBackNavigation(
+                        navController,
+                        onSetBottomBarVisible,
+                        onSetCurrentScreen
+                    )
+                } else {
+                    if (backPressedOnce) {
+                        (context as? Activity)?.finish()
+                    } else {
+                        backPressedOnce = true
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Press back again to exit")
+                        }
+                    }
+                }
+            }
+
             HomeScreen(
                 coffeeCnt = profileInfoState?.coffeeCnt ?: 0,
                 username = profileInfoState?.name ?: "",
@@ -72,11 +122,23 @@ fun AppNavHost(
                     coffeeViewModel.updateLoyaltyCoffeeCount(
                         coffeeViewModel.coffeeCnt.value - 8
                     )
+                    sendNotification(
+                        context,
+                        "Loyalty Coffee Redeemed",
+                        "You have redeemed a loyalty coffee! Enjoy your next cup.",
+                    )
                 },
                 coffeeTypeList = coffeeViewModel.coffeeTypeList
             )
         }
         composable(Reward.route) {
+            BackHandler {
+                handleBackNavigation(
+                    navController,
+                    onSetBottomBarVisible,
+                    onSetCurrentScreen
+                )
+            }
             RewardScreen(
                 onRedeemReward = {
                     onSetBottomBarVisible(false)
@@ -88,30 +150,85 @@ fun AppNavHost(
                     coffeeViewModel.updateLoyaltyCoffeeCount(
                         coffeeViewModel.coffeeCnt.value - 8
                     )
+                    sendNotification(
+                        context,
+                        "Loyalty Coffee Redeemed",
+                        "You have redeemed a loyalty coffee! Enjoy your next cup.",
+                    )
                 }
             )
         }
-        composable(Orders.route) {
+        composable(
+            route = "${Orders.route}?status={status}",
+            arguments = listOf(
+                navArgument("status") {
+                    type = NavType.StringType
+                    defaultValue = "ongoing" // optional, can be "ongoing" or "completed"
+                }
+            )
+        ) {
+            val status = it.arguments?.getString("status") ?: "ongoing"
+
+            BackHandler {
+                handleBackNavigation(
+                    navController,
+                    onSetBottomBarVisible,
+                    onSetCurrentScreen
+                )
+            }
             OrderScreen(
                 onGivenOrder = { orderInfo ->
                     coffeeViewModel.moveToCompletedOrders(orderInfo)
+                    val intent = Intent(context, MainActivity::class.java).apply {
+                        putExtra("navigateTo", Orders.route)
+                        putExtra("status", "completed") // if needed
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    }
+                    val pendingIntent = PendingIntent.getActivity(
+                        context,
+                        0,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                    sendNotification(
+                        context,
+                        "Order Completed",
+                        "Your order for ${context.getString(orderInfo.coffeeType.text)} has been completed!" +
+                                " Go to Orders to track it.",
+                        pendingIntent
+                    )
                 },
                 onGoingOrderList = onGoingOrderListState.value,
                 orderHistoryList = orderHistoryListState.value,
+                status = status,
                 modifier = Modifier.padding(padding)
             )
         }
         composable(Profile.route) {
+            BackHandler {
+                handleBackNavigation(
+                    navController,
+                    onSetBottomBarVisible,
+                    onSetCurrentScreen
+                )
+            }
             ProfileScreen(
                 modifier = Modifier.padding(padding),
                 onBackButton = {
-                    onSetBottomBarVisible(false)
+                    onSetBottomBarVisible(true)
                     navController.navigateUp()
                 },
                 coffeeViewModel
             )
         }
         composable(Redeem.route) {
+            BackHandler {
+                handleBackNavigation(
+                    navController,
+                    onSetBottomBarVisible,
+                    onSetCurrentScreen
+                )
+            }
             RedeemScreen(
                 redeemList = redeemList,
                 onBackButton = {
@@ -162,6 +279,14 @@ fun AppNavHost(
             // TODO: Hand the redeem case.
             val isRedeem = it.arguments?.getBoolean("isRedeemed") ?: false
 
+            BackHandler {
+                handleBackNavigation(
+                    navController,
+                    onSetBottomBarVisible,
+                    onSetCurrentScreen
+                )
+            }
+
             CoffeeDetailScreen(
                 isRedeemed = isRedeem,
                 coffeeData = coffeeData,
@@ -201,24 +326,79 @@ fun AppNavHost(
                         launchSingleTop = true
                     }
                 },
+                onCheckOut = {
+                    onSetBottomBarVisible(false)
+                    coffeeViewModel.buy()
+                    navController.navigateSingleTopTo(OrderSuccess.route)
+                    createNotificationChannel(context)
+
+                    val intent = Intent(context, MainActivity::class.java).apply {
+                        putExtra("navigateTo", Orders.route)
+                        putExtra("status", "ongoing") // if needed
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    }
+
+                    val pendingIntent = PendingIntent.getActivity(
+                        context,
+                        0,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+
+                    sendNotification(
+                        context,
+                        "Order Placed",
+                        "Your coffee order has been placed successfully! Go to Orders to track it.",
+                        pendingIntent
+                    )
+                },
                 coffeeBuyList = coffeeViewModel.coffeeBuyList.toMutableStateList(),
                 modifier = Modifier.padding(padding)
             )
         }
         composable(Cart.route) {
             val cartItems = coffeeViewModel.coffeeBuyList
+
+            BackHandler {
+                handleBackNavigation(
+                    navController,
+                    onSetBottomBarVisible,
+                    onSetCurrentScreen
+                )
+            }
+
             CartScreen(
                 cartItems = cartItems,
                 onBackButton = {
-                    val previousDestination =
-                        navController.previousBackStackEntry?.destination?.route
-                    onSetBottomBarVisible(previousDestination == Home.route)
-                    navController.navigateUp()
+                    onSetBottomBarVisible(true)
+                    navController.navigateSingleTopTo(Home.route)
                 },
                 onCheckoutClick = {
                     onSetBottomBarVisible(false)
                     coffeeViewModel.buy()
                     navController.navigateSingleTopTo(OrderSuccess.route)
+                    createNotificationChannel(context)
+
+                    val intent = Intent(context, MainActivity::class.java).apply {
+                        putExtra("navigateTo", Orders.route)
+                        putExtra("status", "ongoing") // if needed
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    }
+
+                    val pendingIntent = PendingIntent.getActivity(
+                        context,
+                        0,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+
+                    sendNotification(
+                        context,
+                        "Order Placed",
+                        "Your coffee order has been placed successfully! Go to Orders to track it.",
+                        pendingIntent
+                    )
+
                 },
                 modifier = Modifier.padding(padding),
                 onDeleteItem = { buyItem ->
@@ -227,6 +407,13 @@ fun AppNavHost(
             )
         }
         composable(OrderSuccess.route) {
+            BackHandler {
+                handleBackNavigation(
+                    navController,
+                    onSetBottomBarVisible,
+                    onSetCurrentScreen
+                )
+            }
             OrderSuccessScreen(
                 onTrackOrderClick = {
                     onSetBottomBarVisible(true)

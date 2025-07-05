@@ -98,11 +98,11 @@ fun RedeemItem(
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onBackground
                 )
-                Text(
-                    text = "Valid until ${redeemInfo.validDate}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline
-                )
+                // Text(
+                //     text = "Valid until ${redeemInfo.validDate}",
+                //     style = MaterialTheme.typography.bodySmall,
+                //     color = MaterialTheme.colorScheme.outline
+                // )
             }
         }
 

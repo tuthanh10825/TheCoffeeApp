@@ -119,7 +119,7 @@ fun OrderList(
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
                     ) {
-                        Text(text = "Move to History")
+                        Text(text = "Order received, move to history")
                     }
                 }
                 HorizontalDivider(
@@ -162,9 +162,15 @@ fun OrderList(
 fun OrderScreen(
     onGivenOrder: (OrderInfo) -> Unit = {},
     modifier: Modifier = Modifier,
-    onGoingOrderList: List<OrderInfo>, orderHistoryList: List<OrderInfo>) {
+    status: String = "ongoing",
+    onGoingOrderList: List<OrderInfo>,
+    orderHistoryList: List<OrderInfo>
+) {
+
     var selectedTab by rememberSaveable { mutableStateOf(0) }
     var option = listOf("On going", "History")
+    selectedTab = if (status == "ongoing") 0 else 1
+
     PageCard(
         title = "My Order",
         mainContent = {

@@ -68,6 +68,11 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance)
+    implementation(libs.androidx.glance.material3)
+    implementation(libs.androidx.glance.material)
 
 
     ksp("androidx.room:room-compiler:${libs.versions.roomCompiler.get()}")

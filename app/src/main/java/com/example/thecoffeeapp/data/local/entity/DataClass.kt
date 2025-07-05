@@ -43,7 +43,7 @@ data class ProfileInfo(
 
 data class RedeemInfo(
     val type: CoffeeTypeData,
-    val validDate: LocalDate,
+    // val validDate: LocalDate,
     val pointsRequired: Int,
 )
 

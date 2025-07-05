@@ -1,5 +1,6 @@
 package com.example.thecoffeeapp.viewmodel
 
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
 
 import androidx.lifecycle.ViewModel
@@ -15,6 +16,7 @@ import com.example.thecoffeeapp.ui.screens.BuyItem
 import com.example.thecoffeeapp.ui.screens.CoffeeDetailData
 import com.example.thecoffeeapp.ui.screens.CoffeeDetailDataState
 import com.example.thecoffeeapp.ui.screens.CoffeeTypeData
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -35,6 +37,9 @@ class CoffeeViewModelFactory(
 class CoffeeViewModel(
     private val repository: Repository
 ) : ViewModel() {
+    val userInfo: StateFlow<ProfileInfo?> = repository.profile
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
     /*Move to the database*/
     private var _coffeeTypeList = sampleCoffeeTypes.toMutableList()
     val coffeeTypeList: List<CoffeeTypeData>
@@ -87,7 +92,7 @@ class CoffeeViewModel(
             val reward = RewardHistory(
                     type = item.coffeeType,
                     dateTime = LocalDateTime.now(),
-                    points = 10 // Assuming each coffee purchase gives 10 points
+                    points = if (item.getPrice() == 0.00) 0 else 10 // Assuming each coffee purchase gives 10 points
                 )
             addReward(reward)
             currentPoints += reward.points
@@ -107,6 +112,7 @@ class CoffeeViewModel(
         viewModelScope.launch {
             repository.saveProfile(
                 profile.copy(
+                    id = profile.id,
                     coffeeCnt = coffeeCnt.value + 1,
                     redeemPoint = currentPoints // Assuming each coffee gives 10 points
                 )
@@ -157,9 +163,6 @@ class CoffeeViewModel(
 
 
 
-    val userInfo: StateFlow<ProfileInfo?> = repository.profile
-                .stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
 
     val coffeeCnt: StateFlow<Int> = userInfo.map { it?.coffeeCnt ?: 0 }
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
@@ -207,9 +210,9 @@ class CoffeeViewModel(
     }
 
     fun createTempProfile() {
-        if (userInfo.value != null) return // If profile already exists, do nothing
         viewModelScope.launch {
             repository.saveProfile(sampleProfileInfo)
         }
     }
+
 }

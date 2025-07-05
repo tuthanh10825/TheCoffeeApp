@@ -159,12 +159,13 @@ fun CoffeeTypeCollectionGrid(
     modifier: Modifier = Modifier.Companion
 ){
     LazyVerticalGrid(
-        modifier = modifier,
+        modifier = modifier.padding(
+            bottom = 90.dp),
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        items(iconList) { item ->
+        items(list) { item ->
             CoffeeTypeCard(
                 onItemClick = { onItemClick(item) },
                 Modifier.Companion, item)

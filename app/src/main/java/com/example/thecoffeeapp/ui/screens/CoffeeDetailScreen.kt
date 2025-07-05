@@ -1,6 +1,7 @@
 package com.example.thecoffeeapp.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.Add
@@ -43,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.thecoffeeapp.R
 import com.example.thecoffeeapp.ui.component.PageCard
@@ -55,6 +59,7 @@ fun CoffeeDetailScreen(
     coffeeDetailDataState: CoffeeDetailDataState,
     onBackButton: () -> Unit,
     onAddToCart: () -> Unit,
+    onCheckOut: () -> Unit,
     coffeeBuyList: MutableList<BuyItem>,
     modifier: Modifier
 ) {
@@ -83,21 +88,29 @@ fun CoffeeDetailScreen(
                 )
             }
 
-            Column (modifier = Modifier.padding(horizontal = 25.dp, vertical = 40.dp)) {
+            Column (
+                modifier = Modifier
+                    .padding(horizontal = 25.dp, vertical = 40.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
                 Row(
                     Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Americano", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(coffeeData?.text?:R.string.type1_americano), style = MaterialTheme.typography.titleMedium)
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = { if (coffeeDetailDataState.quantity > 1) coffeeDetailDataState.quantity-- }) {
+                        IconButton(
+                            enabled = !isRedeemed,
+                            onClick = { if (coffeeDetailDataState.quantity > 1) coffeeDetailDataState.quantity-- }) {
                             Icon(Icons.Default.Remove, contentDescription = "Minus")
                         }
                         Text(coffeeDetailDataState.quantity.toString())
-                        IconButton(onClick = { coffeeDetailDataState.quantity++ }) {
+                        IconButton(
+                            enabled = !isRedeemed,
+                            onClick = { coffeeDetailDataState.quantity++ }) {
                             Icon(Icons.Default.Add, contentDescription = "Plus")
                         }
                     }
@@ -154,7 +167,7 @@ fun CoffeeDetailScreen(
                                 coffeeDetailDataState.select = CoffeeDetailData.Select.TAKE_AWAY
                             }) {
                             Icon(
-                                Icons.Default.LocalCafe,
+                                painter = painterResource(R.drawable.ic_coffee),
                                 contentDescription = "Take Away",
                                 modifier = Modifier.size(24.dp),
                                 tint = if (coffeeDetailDataState.select == CoffeeDetailData.Select.TAKE_AWAY)
@@ -168,7 +181,7 @@ fun CoffeeDetailScreen(
                                 coffeeDetailDataState.select = CoffeeDetailData.Select.IN_HOUSE
                             }) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_coffee),
+                                Icons.Default.LocalCafe,
                                 contentDescription = "In House",
                                 modifier = Modifier.size(24.dp),
                                 tint = if (coffeeDetailDataState.select == CoffeeDetailData.Select.IN_HOUSE)
@@ -290,8 +303,10 @@ fun CoffeeDetailScreen(
                 ModalBottomSheet(
                     onDismissRequest = { showBottomSheet = false },
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    sheetGesturesEnabled = false,
                     shape = MaterialTheme.shapes.large,
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp),
+                    dragHandle = null
                 ) {
                     if (coffeeBuyList.isEmpty()) {
                         Text(
@@ -300,24 +315,39 @@ fun CoffeeDetailScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .wrapContentSize(Alignment.Center)
-                                .padding(bottom = 250.dp)
+                                .padding(bottom = 280.dp)
                         )
                     } else {
-                        LazyColumn(
+                        Column (
                             modifier = Modifier
-                                .weight(1f)
-                                .padding(horizontal = 24.dp, vertical = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(20.dp)
+                                .height(380.dp)
+                                .padding(top = 24.dp),
+                            verticalArrangement = Arrangement.Top
                         ) {
-                            coffeeBuyList.forEach { buyItem ->
-                                item {
-                                    CartItem(
-                                        buyItem,
-                                        onDeleteItem = { buyItem ->
-                                            coffeeBuyList.remove(buyItem)
-                                        },
-                                    )
+                            LazyColumn(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(horizontal = 24.dp, vertical = 8.dp),
+                                verticalArrangement = Arrangement.spacedBy(20.dp)
+                            ) {
+                                coffeeBuyList.forEach { buyItem ->
+                                    item {
+                                        CartItem(
+                                            buyItem,
+                                            onDeleteItem = { buyItem ->
+                                                coffeeBuyList.remove(buyItem)
+                                            },
+                                        )
+                                    }
                                 }
+                            }
+                            Button(
+                                onClick = onCheckOut,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
+                                Text("Checkout")
                             }
                         }
                     }

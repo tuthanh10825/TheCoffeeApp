@@ -54,6 +54,9 @@ interface ProfileDao {
     @Query("SELECT * FROM profile LIMIT 1")
     fun getProfile(): Flow<ProfileInfo?>
 
+    @Query("SELECT * FROM profile LIMIT 1")
+    suspend fun getProfileDirectly(): ProfileInfo?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(profile: ProfileInfo)
 }

@@ -10,6 +10,7 @@ val point = 0
 val coffeeCnt = 0
 
 val sampleProfileInfo = ProfileInfo(
+    id = 0,
     name = "Tu Thanh",
     email = "tuthanh10825@gmail.com",
     phone = "+1 915 123 456",
@@ -31,18 +32,23 @@ val sampleCoffeeTypes = listOf(
 
 val sampleRedeemList = listOf(
     RedeemInfo(
+        type = sampleCoffeeTypes[0],
+        // validDate = LocalDate.of(2021, 7, 4),
+        pointsRequired = 30,
+    ),
+    RedeemInfo(
         type = sampleCoffeeTypes[1],
-        validDate = LocalDate.of(2021, 7, 4),
-        pointsRequired = 1340,
+        // validDate = LocalDate.of(2021, 7, 4),
+        pointsRequired = 50,
     ),
     RedeemInfo(
         type = sampleCoffeeTypes[2],
-        validDate = LocalDate.of(2021, 7, 5),
-        pointsRequired = 1500,
+        // validDate = LocalDate.of(2021, 7, 5),
+        pointsRequired = 40,
     ),
     RedeemInfo(
         type = sampleCoffeeTypes[3],
-        validDate = LocalDate.of(2021, 7, 6),
-        pointsRequired = 1200,
+        //validDate = LocalDate.of(2021, 7, 6),
+        pointsRequired = 20,
     )
 )

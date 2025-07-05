@@ -22,6 +22,11 @@ lifecycleViewmodelKtx = "2.9.1"
 kotlinKsp = "1.4.0-rc-dev-experimental-20200828"
 comGoogleDevtoolsKspGradlePlugin = "1.5.30-1.0.0"
 symbolProcessingGradlePlugin = "1.5.30-1.0.0"
+uiTextGoogleFonts = "1.9.0-beta02"
+glanceAppwidget = "1.2.0-alpha01"
+glance = "1.2.0-alpha01"
+glanceMaterial3 = "1.2.0-alpha01"
+glanceMaterial = "1.2.0-alpha01"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,6 +55,11 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "lifecycleViewmodel" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 symbol-processing-gradle-plugin = { group = "com.google.devtools.ksp", name = "symbol-processing-gradle-plugin", version.ref = "symbolProcessingGradlePlugin" }
+androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
+androidx-glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glanceAppwidget" }
+androidx-glance = { group = "androidx.glance", name = "glance", version.ref = "glance" }
+androidx-glance-material3 = { group = "androidx.glance", name = "glance-material3", version.ref = "glanceMaterial3" }
+androidx-glance-material = { group = "androidx.glance", name = "glance-material", version.ref = "glanceMaterial" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

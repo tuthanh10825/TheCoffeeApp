@@ -19,6 +19,11 @@ class Repository(
     val onGoingOrders: Flow<List<OrderInfo>> = orderDao.getOngoingOrders()
     val completedOrders: Flow<List<OrderInfo>> = orderDao.getCompletedOrders()
 
+
+    suspend fun getProfileOnce(): ProfileInfo? {
+        return profileDao.getProfileDirectly()
+    }
+
     // Profile related operations
     override suspend fun saveProfile(profile: ProfileInfo) = profileDao.insert(profile)
 
